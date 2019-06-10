@@ -6,6 +6,11 @@
 package view;
 
 import controller.LopHocController;
+import java.awt.event.ActionEvent;
+import java.text.ParseException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -83,6 +88,11 @@ public class FLop extends MyFrame {
         cbGV.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         btnAdd.setText("Thêm");
+        btnAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddActionPerformed(evt);
+            }
+        });
 
         btnUpdate.setText("Sửa");
 
@@ -237,6 +247,38 @@ public class FLop extends MyFrame {
         FManagement.getInstance().removeFormInQueue(this);
     }//GEN-LAST:event_btnExitActionPerformed
 
+    private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
+        String id=txfMaLop.getText();
+        String name=txfTenMon.getText();
+        String siso=spSiso.getValue().toString();
+        String start=txfBatDau.getText();
+        String end=txfKetThuc.getText();
+        String sotiet=spSoTiet.getValue().toString();
+        String gvID;
+        if(!cbGV.getSelectedItem().toString().equals("none"))
+            gvID=cbGV.getSelectedItem().toString().split("-")[1];
+        else
+            gvID="none";
+        
+        try {
+            if(Controller.AddLop(id,name,siso,start,end,sotiet,gvID))
+            {
+                JOptionPane.showConfirmDialog(FLop.getInstance(), "Thêm thành công !","Thông báo", JOptionPane.OK_OPTION);
+                releaseAction();
+                reload();
+                addAction();
+            }
+            else
+            {
+                JOptionPane.showConfirmDialog(FLop.getInstance(), "Thêm thất bại !","Thông báo", JOptionPane.OK_OPTION);
+                
+            }
+        } catch (ParseException ex) {
+            Logger.getLogger(FLop.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }//GEN-LAST:event_btnAddActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -300,21 +342,34 @@ public class FLop extends MyFrame {
 
     @Override
     public void reload() {
-
+        txfMaLop.setText("");
+        txfTenMon.setText("");
+        spSiso.setValue(0);
+        txfBatDau.setText("");
+        txfKetThuc.setText("");
+        spSoTiet.setValue(0);
+        
+        Controller.loadGV(cbGV);
+        Controller.loadLop(tableLop);
     }
 
     @Override
     public void releaseAction() {
-
+        cbGV.removeActionListener(cbGV.getActionListeners()[0]);
     }
 
     @Override
     public void update() {
-
+        Controller.loadGV(cbGV);
     }
 
     @Override
     public void addAction() {
-
+        cbGV.addActionListener ((ActionEvent e) -> {
+            if(cbGV.getSelectedItem().toString().equals("..."))
+            {
+                FManagement.getInstance().addFormToQueue(FGV.getInstance());
+            }
+        });
     }
 }
