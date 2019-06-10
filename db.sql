@@ -11,18 +11,15 @@ CREATE TABLE GIANGVIEN
 
 CREATE TABLE LOPHOC
 (
-	MaLop INT auto_increment  PRIMARY KEY,
+	MaLop varchar(100)  PRIMARY KEY,
     TenMon NVARCHAR(100),
-    Siso int not null,
+    Siso int ,
 	BatDau date,
 	KetThuc date,
-	SoTiet INT NOT NULL,
-	MaGV varchar(100) NOT NULL
+	SoTiet int,
+	MaGV varchar(100)
 );
 
-alter table LOPHOC 
-add constraint LOPHOC_GIANGVIEN_FK 
-foreign key(MaGV) references GIANGVIEN(MaGV);
 
 DELIMITER $$
 CREATE PROCEDURE USP_AddGV(id VARCHAR(100),name nvarchar(100))
@@ -44,3 +41,28 @@ BEGIN
 	select * from GIANGVIEN where MaGV=id;
 END; $$
 DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE USP_AddLop(id VARCHAR(100),name nvarchar(100),siso int,start date,end date,sotiet int,gvID varchar(100))
+BEGIN
+	if(gvID!="none")
+    then
+		insert LOPHOC values(
+			id,name,siso,start,end,sotiet,gvID
+		);
+	else
+        insert LOPHOC values(
+			id,name,siso,start,end,sotiet,null
+		);
+	end if;
+END; $$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE USP_GetLop()
+BEGIN
+	select * from LOPHOC;
+END; $$
+DELIMITER ;
+CALL USP_GetLop();
+select * from GIANGVIEN
