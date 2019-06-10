@@ -6,6 +6,7 @@
 package view;
 
 import controller.GiangVienController;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -59,6 +60,11 @@ public class FGV extends MyFrame {
         jLabel3.setText("Tên giảng viên");
 
         btnAddGV.setText("Thêm");
+        btnAddGV.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddGVActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -174,6 +180,22 @@ public class FGV extends MyFrame {
         FManagement.getInstance().removeFormInQueue(this);
     }//GEN-LAST:event_btnExitActionPerformed
 
+    private void btnAddGVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddGVActionPerformed
+        String id=txfMaGV.getText();
+        String name=txfTenGV.getText();
+        
+        if(Controller.addGV(id,name))
+        {
+            JOptionPane.showConfirmDialog(FGV.getInstance(), "Thêm thành công !","Thông báo", JOptionPane.OK_OPTION);
+            reload();
+        }
+        else
+        {
+            JOptionPane.showConfirmDialog(FGV.getInstance(), "Thêm thất bại !","Thông báo", JOptionPane.OK_OPTION);
+            
+        }
+    }//GEN-LAST:event_btnAddGVActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -225,7 +247,10 @@ public class FGV extends MyFrame {
 
     @Override
     public void reload() {
-
+        txfMaGV.setText("");
+        txfTenGV.setText("");
+        
+        Controller.loadGV(tableGV);
     }
 
     @Override
