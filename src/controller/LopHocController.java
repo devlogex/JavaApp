@@ -77,4 +77,16 @@ public class LopHocController {
         table.getColumnModel().getColumn(7).setPreferredWidth(200);
     }
 
+    public boolean UpdateLop(String id, String name, String siso, String start, String end, String sotiet, String gvID) throws ParseException {
+        return Model.UpdateLop(
+                id,
+                name,
+                Integer.parseInt(siso),
+                (new SimpleDateFormat("dd/MM/yyyy")).parse(start),
+                (new SimpleDateFormat("dd/MM/yyyy")).parse(end),
+                Integer.parseInt(sotiet),
+                gvID
+        );
+    }
+
 }

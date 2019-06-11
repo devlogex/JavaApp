@@ -36,9 +36,12 @@ END; $$
 DELIMITER ;
 
 DELIMITER $$
-CREATE PROCEDURE USP_GetGVByID(id varchar(100))
+CREATE PROCEDURE USP_GetGVByID(old_MaGV varchar(100))
 BEGIN
-	select * from GIANGVIEN where MaGV=id;
+	update GIANGVIEN
+		set TongLop=(select count(*) from LOPHOC h where h.MaGV=old_MaGV),
+			TongTiet=(select sum(SoTiet) from LOPHOC h where h.MaGV=old_MaGV)
+		where MaGV=old_MaGV;
 END; $$
 DELIMITER ;
 
@@ -50,6 +53,7 @@ BEGIN
 		insert LOPHOC values(
 			id,name,siso,start,end,sotiet,gvID
 		);
+        update GIANGVIEN set TongLop=TongLop+1, TongTiet=TongTiet+sotiet where MaGV=gvID;
 	else
         insert LOPHOC values(
 			id,name,siso,start,end,sotiet,null
@@ -64,5 +68,41 @@ BEGIN
 	select * from LOPHOC;
 END; $$
 DELIMITER ;
-CALL USP_GetLop();
-select * from GIANGVIEN
+
+DELIMITER $$
+CREATE PROCEDURE USP_GetLopByID(id varchar(100))
+BEGIN
+	select * from LOPHOC where MaLop=id;
+END; $$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE USP_UpdateGVLop(gvID varchar(100))
+BEGIN
+	update GIANGVIEN
+		set TongLop=(select count(*) from LOPHOC where MaGV=gvID),
+			TongTiet=(select sum(SoTiet) from LOPHOC where MaGV=gvID)
+        where MaGV=gvID;
+END; $$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE USP_UpdateLop(id VARCHAR(100),name nvarchar(100),siso int,start date,end date,sotiet int,gvID varchar(100))
+BEGIN    
+	if(gvID="none")
+    then
+	update LOPHOC 
+		set TenMon=name, Siso=siso, BatDau=start, KetThuc=end, SoTiet=sotiet, MaGV=null
+        where MaLop=id;
+	else
+    update LOPHOC 
+		set TenMon=name, Siso=siso, BatDau=start, KetThuc=end, SoTiet=sotiet, MaGV=gvID
+        where MaLop=id;
+	end if;
+        
+	update GIANGVIEN
+		set TongLop=(select count(*) from LOPHOC where MaGV=gvID),
+			TongTiet=(select sum(SoTiet) from LOPHOC where MaGV=gvID)
+        where MaGV=gvID;
+END; $$
+DELIMITER ;

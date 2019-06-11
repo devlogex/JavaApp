@@ -95,6 +95,11 @@ public class FLop extends MyFrame {
         });
 
         btnUpdate.setText("Sửa");
+        btnUpdate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUpdateActionPerformed(evt);
+            }
+        });
 
         btnDelete.setText("Xóa");
 
@@ -183,6 +188,11 @@ public class FLop extends MyFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        tableLop.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tableLopMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tableLop);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -278,6 +288,51 @@ public class FLop extends MyFrame {
         }
         
     }//GEN-LAST:event_btnAddActionPerformed
+
+    private void tableLopMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableLopMouseClicked
+        int row=tableLop.getSelectedRow();
+        txfMaLop.setText(tableLop.getModel().getValueAt(row, 2).toString());
+        txfTenMon.setText(tableLop.getModel().getValueAt(row, 3).toString());
+        spSiso.setValue(Integer.parseInt(tableLop.getModel().getValueAt(row, 4).toString()));
+        txfBatDau.setText(tableLop.getModel().getValueAt(row, 5).toString());
+        txfKetThuc.setText(tableLop.getModel().getValueAt(row, 6).toString());
+        spSoTiet.setValue(Integer.parseInt(tableLop.getModel().getValueAt(row, 7).toString()));
+        
+        if(tableLop.getModel().getValueAt(row, 1).toString().equals("")){
+            cbGV.setSelectedItem("none");
+        }
+    }//GEN-LAST:event_tableLopMouseClicked
+
+    private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
+        String id=txfMaLop.getText();
+        String name=txfTenMon.getText();
+        String siso=spSiso.getValue().toString();
+        String start=txfBatDau.getText();
+        String end=txfKetThuc.getText();
+        String sotiet=spSoTiet.getValue().toString();
+        String gvID;
+        if(!cbGV.getSelectedItem().toString().equals("none"))
+            gvID=cbGV.getSelectedItem().toString().split("-")[1];
+        else
+            gvID="none";
+        
+        try {
+            if(Controller.UpdateLop(id,name,siso,start,end,sotiet,gvID))
+            {
+                JOptionPane.showConfirmDialog(FLop.getInstance(), "Cập nhật thành công !","Thông báo", JOptionPane.OK_OPTION);
+                releaseAction();
+                reload();
+                addAction();
+            }
+            else
+            {
+                JOptionPane.showConfirmDialog(FLop.getInstance(), "Cập nhật thất bại !","Thông báo", JOptionPane.OK_OPTION);
+                
+            }
+        } catch (ParseException ex) {
+            Logger.getLogger(FLop.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btnUpdateActionPerformed
 
     /**
      * @param args the command line arguments

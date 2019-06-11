@@ -63,7 +63,7 @@ public class LopHoc {
             Statement statement =DataAccessHelper.getInstance().conn.createStatement();
             ResultSet rs=statement.executeQuery(SQL);
             while(rs.next())
-            {System.out.println(rs.getString("MaGV"));
+            {
                 list.add(new LopHoc(
                         rs.getString("MaLop"),
                         rs.getString("TenMon"),
@@ -77,6 +77,53 @@ public class LopHoc {
             DataAccessHelper.getInstance().getClose();
         } catch (Exception e) {}
         return list;
+    }
+
+    public LopHoc getLopByID(String id){
+        String SQL="call USP_GetLopByID(\""+id+"\")";
+        LopHoc list=null;
+        try{
+            DataAccessHelper.getInstance().getConnect();
+            Statement statement =DataAccessHelper.getInstance().conn.createStatement();
+            ResultSet rs=statement.executeQuery(SQL);
+            while(rs.next())
+            {
+                list=new LopHoc(
+                        rs.getString("MaLop"),
+                        rs.getString("TenMon"),
+                        Integer.parseInt(rs.getString("Siso")),
+                        (new SimpleDateFormat("yyyy-MM-dd")).parse(rs.getString("BatDau")),
+                        (new SimpleDateFormat("yyyy-MM-dd")).parse(rs.getString("KetThuc")),
+                        Integer.parseInt(rs.getString("SoTiet")),
+                        rs.getString("MaGV")
+                );
+            }
+            DataAccessHelper.getInstance().getClose();
+        } catch (Exception e) {}
+        return list;
+    }
+    
+    public boolean UpdateLop(String id, String name, int siso, Date start, Date end, int sotiet, String gvID) {
+        String old_gv=getLopByID(id).gvID;
+        SimpleDateFormat df=new SimpleDateFormat("yyyy/MM/dd");
+        String SQL="call USP_UpdateLop(\""+id+"\",\""+name+"\",\""+siso+"\",\""+df.format(start)+"\",\""+df.format(end)+"\",\""+sotiet+"\",\""+gvID+"\")";
+        try{
+            DataAccessHelper.getInstance().getConnect();
+            Statement statement =DataAccessHelper.getInstance().conn.createStatement();
+            int rs=statement.executeUpdate(SQL);
+            if(rs>0)
+            {
+                statement.executeUpdate("call USP_UpdateGVLop(\""+old_gv+"\")");                
+                DataAccessHelper.getInstance().getClose();
+                return true;
+            }
+            else
+            {
+                DataAccessHelper.getInstance().getClose();
+                return false;
+            }
+            
+        } catch (Exception e) {return false;}
     }
 
     
